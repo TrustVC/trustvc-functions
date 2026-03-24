@@ -4,6 +4,7 @@ import cors from "cors";
 import serverless from "serverless-http";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
+import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from "aws-lambda";
 import { corsOrigin } from "../../utils";
 import { MAX_REQUEST_BODY_SIZE } from "../../constants";
 import { router } from "./router";
@@ -29,7 +30,14 @@ app.use(
     },
   })
 );
-app.use("/.netlify/functions/storage", router);
+app.use("/storage", router);
 app.disable("x-powered-by");
 
-export const handler = serverless(app);
+const serverlessHandler = serverless(app);
+
+export const handler = async (
+  event: APIGatewayProxyEvent,
+  context: Context
+): Promise<APIGatewayProxyResult> => {
+  return serverlessHandler(event, context) as Promise<APIGatewayProxyResult>;
+};

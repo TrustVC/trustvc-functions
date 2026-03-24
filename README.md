@@ -1,8 +1,6 @@
-# TradeTrust functions
+# Trustvc functions
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/d1d7e5ae-2010-4f42-bcf0-9e9b6b6f7b33/deploy-status)](https://app.netlify.com/sites/tradetrust-functions/deploys)
-
-API endpoints to use.
+API endpoints for document storage using AWS Lambda and S3.
 
 ## ⚠️ Reminder
 
@@ -12,9 +10,17 @@ The following API endpoints are references on how you would implement such micro
 
 ---
 
+## Prerequisites
+
+- Node.js 22.x or higher
+- AWS Account
+- AWS SAM CLI (for deployment)
+
+---
+
 ### Document storage
 
-Endpoint: https://tradetrust-functions.netlify.app/.netlify/functions/storage
+Endpoint: `https://<your-api-gateway-url>/storage`
 
 POST
 
@@ -44,41 +50,81 @@ GET
 - `/storage/:id` returns an encrypted OpenAttestation document
 - `/storage/queue` returns id and generated decrypt key
 
-### Verify
-
-Endpoint: https://tradetrust-functions.netlify.app/.netlify/functions/verify
-
-POST
-
-- `/verify` verifies an OpenAttestation document on mainnet network
-- `/verify?network="amoy"` verifies an OpenAttestation document on amoy network
-- `/verify?network="sepolia"` verifies an OpenAttestation document on sepolia network
-- `/verify?network="xdcapothem"` verifies an OpenAttestation document on xdcapothem network
-- `/verify?network="stability"` verifies an OpenAttestation document on stability network
-
-```
-// POST data example
-{
-  "document": {
-    "version": "https://schema.openattestation.com/2.0/schema.json",
-    ...rest
-  }
-}
-```
-
 ---
 
-#### Development
+## Development
 
-`npm run start`
+### Local Development
 
-#### Notes
+1. Install dependencies:
+```bash
+npm install
+```
 
-The dummy value in `API_KEY` should work for local development purposes. For production `API_KEY` value, refer to netlify env variables at dashboard.
+2. Start local development server with S3:
+```bash
+npm run start
+```
 
-#### Network specific configurations
+This will start:
+- Local S3 server (s3rver) on port 4568
+- Lambda function locally
 
-The next environment variables are required for verifying documents on some of the networks. They are used through the `@tradetrust-tt/tradetrust-utils` package.
+### Environment Variables
 
-- INFURA_API_KEY: [Infura API key](https://www.infura.io/), used for verifying Polygon Amoy network
-- STABILITY_API_KEY: [Stability API key](https://portal.stabilityprotocol.com), used for verifying documents on the Stability network
+Required environment variables:
+
+- `API_KEY`: API key for authentication
+- `SESSION_SECRET`: Secret for express-session
+- `TT_AWS_BUCKET_NAME`: S3 bucket name for document storage
+- `TT_STORAGE_AWS_ACCESS_KEY_ID`: AWS access key ID for S3
+- `TT_STORAGE_AWS_SECRET_ACCESS_KEY`: AWS secret access key for S3
+
+For local development, the dummy value in `API_KEY` should work.
+
+## Deployment
+
+### Deploy to AWS using SAM
+
+1. Install AWS SAM CLI: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html
+
+2. Build the application:
+```bash
+sam build
+```
+
+3. Deploy the application:
+```bash
+sam deploy --guided
+```
+
+During the guided deployment, you'll be prompted for:
+- Stack name
+- AWS Region
+- API Key (for authentication)
+- Session Secret
+
+4. After deployment, SAM will output the API Gateway endpoint URL.
+
+### Manual Deployment
+
+Alternatively, you can deploy using AWS Lambda and API Gateway manually:
+
+1. Build the TypeScript code
+2. Package the `netlify/functions/storage` directory with `node_modules`
+3. Create a Lambda function with Node.js 22.x runtime
+4. Set up API Gateway with proxy integration
+5. Configure environment variables
+6. Create an S3 bucket with 30-day lifecycle policy
+
+## Testing
+
+Run tests:
+```bash
+npm test
+```
+
+Run tests with CI (includes local S3 and function server):
+```bash
+npm run test:ci
+```

@@ -44,7 +44,7 @@ router.get(
       httpOnly: true, // Ensure the cookie is not accessible via JavaScript
       secure: true, // Use secure cookies (only sent over HTTPS)
       sameSite: "None", // To allow cross-origin cookies
-      path: "/.netlify/functions/storage", // Scope to storage function path
+      path: "/storage", // Scope to storage function path
       maxAge: 1000 * 60 * 60, // Cookie will expire in 1 hour
     });
 
@@ -138,7 +138,7 @@ router.get("/queue", checkApiKey, async (req: Request, res: Response) => {
   }
 });
 
-// lets omit checkApiKey for tradetrust web to retrieve document easily
+// lets omit checkApiKey for trustvc web to retrieve document easily
 router.get("/:id", async (req: Request, res: Response) => {
   const {
     params: { id },
