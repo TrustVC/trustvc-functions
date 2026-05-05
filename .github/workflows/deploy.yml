@@ -30,7 +30,7 @@ jobs:
         if: github.ref == 'refs/heads/dev'
         run: |
           sam deploy \
-            --stack-name storage-dev \
+            --stack-name trustvc-storage-dev \
             --resolve-s3 \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
@@ -41,7 +41,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: |
           sam deploy \
-            --stack-name storage-prod \
+            --stack-name trustvc-storage-prod \
             --resolve-s3 \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
