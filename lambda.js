@@ -4,8 +4,8 @@ const s3 = new S3Client({});
 
 export const handler = async (event) => {
   try {
-    const path = event.rawPath || "/";
-    const method = event.requestContext?.http?.method || "GET";
+    const path = event.path || "/";
+    const method = event.httpMethod || "GET";
 
     if (path === "/" && method === "POST") {
       const body = JSON.parse(event.body || "{}");

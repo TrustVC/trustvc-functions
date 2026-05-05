@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: TrustVC Storage (Lambda + HTTP API + S3)
+Description: TrustVC Storage (Lambda + REST API + S3)
 
 Parameters:
   Env:
@@ -30,12 +30,12 @@ Resources:
             BucketName: !Sub "trustvc-storage-${Env}"
       Events:
         ApiProxy:
-          Type: HttpApi
+          Type: Api
           Properties:
             Path: /{proxy+}
             Method: ANY
         ApiRoot:
-          Type: HttpApi
+          Type: Api
           Properties:
             Path: /
             Method: ANY
@@ -43,4 +43,4 @@ Resources:
 Outputs:
   ApiUrl:
     Description: Invoke URL
-    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
