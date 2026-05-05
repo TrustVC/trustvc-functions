@@ -16,42 +16,28 @@ Globals:
     Architectures: [x86_64]
 
 Resources:
-  StorageBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Sub "trustvc-storage-${Env}"
-      LifecycleConfiguration:
-        Rules:
-          - Id: DeleteAfter30Days
-            Status: Enabled
-            ExpirationInDays: 30
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
-
   StorageFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub "storage-function-${Env}"
+      FunctionName: !Sub "trustvc-storage-function-${Env}"
       CodeUri: ./
       Handler: lambda.handler
       Environment:
         Variables:
-          TT_AWS_BUCKET_NAME: !Ref StorageBucket
+          TT_AWS_BUCKET_NAME: !Sub "trustvc-storage-${Env}"
       Policies:
         - S3CrudPolicy:
-            BucketName: !Ref StorageBucket
+            BucketName: !Sub "trustvc-storage-${Env}"
       Events:
-        Api:
+        ApiProxy:
           Type: HttpApi
           Properties:
             Path: /{proxy+}
+            Method: ANY
+        ApiRoot:
+          Type: HttpApi
+          Properties:
+            Path: /
             Method: ANY
 
 Outputs:
