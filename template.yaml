@@ -1,108 +1,46 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: TrustVC Storage Functions
+Description: TrustVC Storage (Lambda + HTTP API + S3)
+
+Parameters:
+  Env:
+    Type: String
+    AllowedValues: [dev, prod]
+    Default: dev
 
 Globals:
   Function:
+    Runtime: nodejs22.x
     Timeout: 30
     MemorySize: 512
-    Runtime: nodejs22.x
-    Architectures:
-      - x86_64
-    Environment:
-      Variables:
-        NODE_ENV: production
-        TT_AWS_BUCKET_NAME: !Ref StorageBucket
-        TT_STORAGE_AWS_ACCESS_KEY_ID: !Ref StorageAccessKey
-        TT_STORAGE_AWS_SECRET_ACCESS_KEY: !GetAtt StorageAccessKey.SecretAccessKey
-        API_KEY: !Ref ApiKey
-        SESSION_SECRET: !Ref SessionSecret
-
-Parameters:
-  ApiKey:
-    Type: String
-    Description: API Key for authentication
-    NoEcho: true
-  SessionSecret:
-    Type: String
-    Description: Session secret for express-session
-    NoEcho: true
+    Architectures: [x86_64]
 
 Resources:
-  # S3 Bucket for document storage
-  StorageBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Sub '${AWS::StackName}-storage-bucket'
-      LifecycleConfiguration:
-        Rules:
-          - Id: DeleteAfter30Days
-            Status: Enabled
-            ExpirationInDays: 30
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
-
-  # IAM User for S3 access
-  StorageUser:
-    Type: AWS::IAM::User
-    Properties:
-      UserName: !Sub '${AWS::StackName}-storage-user'
-      Policies:
-        - PolicyName: S3AccessPolicy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - s3:PutObject
-                  - s3:GetObject
-                  - s3:DeleteObject
-                Resource: !Sub '${StorageBucket.Arn}/*'
-
-  StorageAccessKey:
-    Type: AWS::IAM::AccessKey
-    Properties:
-      UserName: !Ref StorageUser
-
-  # Lambda Function
   StorageFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub '${AWS::StackName}-storage'
+      FunctionName: !Sub "storage-function-${Env}"
       CodeUri: ./
-      Handler: netlify/functions/storage/index.handler
-      Events:
-        ApiRoot:
-          Type: Api
-          Properties:
-            Path: /storage
-            Method: ANY
-        ApiProxy:
-          Type: Api
-          Properties:
-            Path: /storage/{proxy+}
-            Method: ANY
+      Handler: lambda.handler
+      Environment:
+        Variables:
+          TT_AWS_BUCKET_NAME: !Sub "trustvc-storage-${Env}"
       Policies:
         - S3CrudPolicy:
-            BucketName: !Ref StorageBucket
+            BucketName: !Sub "trustvc-storage-${Env}"
+      Events:
+        ApiProxy:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+        ApiRoot:
+          Type: HttpApi
+          Properties:
+            Path: /
+            Method: ANY
 
 Outputs:
-  StorageApi:
-    Description: API Gateway endpoint URL for Storage function
-    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/storage'
-  StorageFunctionArn:
-    Description: Storage Lambda Function ARN
-    Value: !GetAtt StorageFunction.Arn
-  StorageBucketName:
-    Description: S3 Bucket for document storage
-    Value: !Ref StorageBucket
-  StorageAccessKeyId:
-    Description: Access Key ID for S3 storage
-    Value: !Ref StorageAccessKey
+  ApiUrl:
+    Description: Invoke URL
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
