@@ -45,10 +45,11 @@ Resources:
       BuildProperties:
         Minify: false
         Target: es2022
-        Format: esm
-        OutputExtension: .mjs
         External:
           - core-js
+          - ky-universal
+          - ky
+          - web-streams-polyfill
         EntryPoints:
           - src/functions/storage/index.ts
 
