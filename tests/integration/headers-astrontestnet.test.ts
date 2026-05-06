@@ -1,13 +1,10 @@
 import supertest from "supertest";
 import documentAstron from "../fixtures/v2/document-astrontestnet.json";
-import { ERROR_MESSAGE } from "../../netlify/constants";
+import { ERROR_MESSAGE } from "../../src/constants";
 
-const API_ENDPOINT = "http://localhost:5080/.netlify/functions/storage";
+const API_ENDPOINT = "http://localhost:5080";
 const request = supertest(API_ENDPOINT);
 const postData = { document: documentAstron };
-
-const csrfToken = "mock-csrf-token"; // Mocked CSRF token
-const csrfTokenCookie = `csrfToken=${csrfToken}; HttpOnly; Path=/; SameSite=Strict`; // Mocked CSRF cookie
 
 describe("API key check", () => {
   it("should fail with 400 when API key is not provided", async () => {
@@ -35,45 +32,37 @@ describe("cors", () => {
       .expect(500);
   });
 
-  it("should pass with 200 when origin is TradeTrust creator", async () => {
+  it("should pass with 200 when origin is Trustvc creator", async () => {
     await request
       .post("/")
       .set("x-api-key", process.env.API_KEY)
-      .set("x-csrf-token", csrfToken)
-      .set("cookie", csrfTokenCookie)
-      .set("Origin", "https://creator.tradetrust.io")
+      .set("Origin", "https://creator.trustvc.io")
       .send(postData)
       .expect(200);
   });
 
-  it("should pass with 200 when origin is TradeTrust testnets website", async () => {
+  it("should pass with 200 when origin is Trustvc testnets website", async () => {
     await request
       .post("/")
       .set("x-api-key", process.env.API_KEY)
-      .set("x-csrf-token", csrfToken)
-      .set("cookie", csrfTokenCookie)
-      .set("Origin", "https://dev.tradetrust.io")
+      .set("Origin", "https://dev.trustvc.io")
       .send(postData)
       .expect(200);
   });
 
-  it("should pass with 200 when origin is TradeTrust production website", async () => {
+  it("should pass with 200 when origin is Trustvc production website", async () => {
     await request
       .post("/")
       .set("x-api-key", process.env.API_KEY)
-      .set("x-csrf-token", csrfToken)
-      .set("cookie", csrfTokenCookie)
-      .set("Origin", "https://tradetrust.io")
+      .set("Origin", "https://trustvc.io")
       .send(postData)
       .expect(200);
   });
-  it("should pass with 200 when origin is TradeTrust production website", async () => {
+  it("should pass with 200 when origin is Trustvc production website", async () => {
     await request
       .post("/")
       .set("x-api-key", process.env.API_KEY)
-      .set("x-csrf-token", csrfToken)
-      .set("cookie", csrfTokenCookie)
-      .set("Origin", "https://www.tradetrust.io")
+      .set("Origin", "https://www.trustvc.io")
       .send(postData)
       .expect(200);
   });

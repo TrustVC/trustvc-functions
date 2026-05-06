@@ -1,5 +1,5 @@
 /** @type {import('@jest/types').Config.InitialOptions} */
-export default {
+module.exports = {
   testEnvironment: "node",
   testTimeout: 30000,
   moduleNameMapper: {

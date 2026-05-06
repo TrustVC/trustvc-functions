@@ -21,10 +21,11 @@ Resources:
     Properties:
       FunctionName: !Sub "trustvc-storage-function-${Env}"
       CodeUri: ./
-      Handler: lambda.handler
+      Handler: index.handler
       Environment:
         Variables:
           TT_AWS_BUCKET_NAME: !Sub "trustvc-storage-${Env}"
+          API_KEY: !Sub "{{resolve:ssm:/trustvc/${Env}/api-key}}"
       Policies:
         - S3CrudPolicy:
             BucketName: !Sub "trustvc-storage-${Env}"
@@ -39,6 +40,13 @@ Resources:
           Properties:
             Path: /
             Method: ANY
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: es2022
+        EntryPoints:
+          - src/functions/storage/index.ts
 
 Outputs:
   ApiUrl:

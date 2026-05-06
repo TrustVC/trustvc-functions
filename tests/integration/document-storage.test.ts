@@ -3,7 +3,6 @@ import documentAmoyV2 from "../fixtures/v2/document-amoy.json";
 import documentAmoyV3 from "../fixtures/v3/document-amoy.json";
 import documentXDCApothemV2 from "../fixtures/v2/document-xdcapothem.json";
 import documentXDCApothemV3 from "../fixtures/v3/document-xdcapothem.json";
-import documentSepoliaV2 from "../fixtures/v2/document-sepolia.json";
 import documentSepoliaV3 from "../fixtures/v3/document-sepolia.json";
 import documentSepoliaNoNetworkV2 from "../fixtures/v2/document-sepolia-no-network.json";
 import documentSepoliaNoNetworkV3 from "../fixtures/v3/document-sepolia-no-network.json";
@@ -12,29 +11,23 @@ import w3cNonTransferableDocument from "../fixtures/w3c/document-non-transferabl
 import {
   ERROR_MESSAGE,
   DOCUMENT_STORAGE_ERROR_MESSAGE,
-} from "../../netlify/constants";
+} from "../../src/constants";
 
-const API_ENDPOINT = "http://localhost:5080/.netlify/functions/storage";
+const API_ENDPOINT = "http://localhost:5080";
 const request = supertest(API_ENDPOINT);
 const postDataAmoyV2 = { document: documentAmoyV2 };
 const postDataAmoyV3 = { document: documentAmoyV3 };
 const postDataXDCApothemV2 = { document: documentXDCApothemV2 };
 const postDataXDCApothemV3 = { document: documentXDCApothemV3 };
-const postDataSepoliaV2 = { document: documentSepoliaV2 };
 const postDataSepoliaV3 = { document: documentSepoliaV3 };
 const postDataW3cTransferable = { document: w3cTransferableDocument };
 const postDataW3cNonTransferable = { document: w3cNonTransferableDocument };
-
-const csrfToken = "mock-csrf-token"; // Mocked CSRF token
-const csrfTokenCookie = `csrfToken=${csrfToken}; HttpOnly; Path=/; SameSite=Strict`; // Mocked CSRF cookie
 
 describe("POST /", () => {
   it("should store encrypted v2 amoy document", async () => {
     const response = await request
       .post("/")
       .set("x-api-key", process.env.API_KEY)
-      .set("x-csrf-token", csrfToken)
-      .set("cookie", csrfTokenCookie)
       .send(postDataAmoyV2)
       .expect(200);
 
@@ -48,9 +41,7 @@ describe("POST /", () => {
     const response = await request
       .post("/")
       .set("x-api-key", process.env.API_KEY)
-      .set("x-csrf-token", csrfToken)
-      .set("cookie", csrfTokenCookie)
-      .send(postDataSepoliaV2)
+      .send(postDataSepoliaV3)
       .expect(200);
 
     expect(response.body).toHaveProperty("id");
@@ -62,8 +53,6 @@ describe("POST /", () => {
     const response = await request
       .post("/")
       .set("x-api-key", process.env.API_KEY)
-      .set("x-csrf-token", csrfToken)
-      .set("cookie", csrfTokenCookie)
       .send(postDataXDCApothemV2)
       .expect(200);
 
@@ -76,8 +65,6 @@ describe("POST /", () => {
     const response = await request
       .post("/")
       .set("x-api-key", process.env.API_KEY)
-      .set("x-csrf-token", csrfToken)
-      .set("cookie", csrfTokenCookie)
       .send(postDataSepoliaV3)
       .expect(200);
 
@@ -91,8 +78,6 @@ describe("POST /", () => {
     const response = await request
       .post("/")
       .set("x-api-key", process.env.API_KEY)
-      .set("x-csrf-token", csrfToken)
-      .set("cookie", csrfTokenCookie)
       .send(postDataAmoyV3)
       .expect(200);
 
@@ -105,8 +90,6 @@ describe("POST /", () => {
     const response = await request
       .post("/")
       .set("x-api-key", process.env.API_KEY)
-      .set("x-csrf-token", csrfToken)
-      .set("cookie", csrfTokenCookie)
       .send(postDataXDCApothemV3)
       .expect(200);
 
@@ -120,8 +103,6 @@ describe("POST /", () => {
     const response = await request
       .post("/")
       .set("x-api-key", process.env.API_KEY)
-      .set("x-csrf-token", csrfToken)
-      .set("cookie", csrfTokenCookie)
       .send(postDataW3cTransferable)
       .expect(200);
 
@@ -135,8 +116,6 @@ describe("POST /", () => {
     const response = await request
       .post("/")
       .set("x-api-key", process.env.API_KEY)
-      .set("x-csrf-token", csrfToken)
-      .set("cookie", csrfTokenCookie)
       .send(postDataW3cNonTransferable)
       .expect(200);
 
@@ -150,8 +129,6 @@ describe("POST /", () => {
     const response = await request
       .post("/")
       .set("x-api-key", process.env.API_KEY)
-      .set("x-csrf-token", csrfToken)
-      .set("cookie", csrfTokenCookie)
       .send({
         document: { foo: "bar" },
       })
@@ -164,8 +141,6 @@ describe("POST /", () => {
     const response = await request
       .post("/")
       .set("x-api-key", process.env.API_KEY)
-      .set("x-csrf-token", csrfToken)
-      .set("cookie", csrfTokenCookie)
       .send({
         document: documentSepoliaNoNetworkV2,
       })
@@ -179,8 +154,6 @@ describe("POST /", () => {
     const response = await request
       .post("/")
       .set("x-api-key", process.env.API_KEY)
-      .set("x-csrf-token", csrfToken)
-      .set("cookie", csrfTokenCookie)
       .send({
         document: documentSepoliaNoNetworkV3,
       })
@@ -210,9 +183,7 @@ describe("GET /:id", () => {
     const postResponse = await request
       .post("/")
       .set("x-api-key", process.env.API_KEY)
-      .set("x-csrf-token", csrfToken)
-      .set("cookie", csrfTokenCookie)
-      .send(postDataSepoliaV2)
+      .send(postDataSepoliaV3)
       .expect(200);
 
     const getResponse = await request
@@ -246,9 +217,7 @@ describe("POST /:id", () => {
     const response = await request
       .post(`/${queueResponse.body.id}`)
       .set("x-api-key", process.env.API_KEY)
-      .set("x-csrf-token", csrfToken)
-      .set("cookie", csrfTokenCookie)
-      .send(postDataSepoliaV2)
+      .send(postDataSepoliaV3)
       .expect(200);
 
     expect(response.body).toHaveProperty("id", queueResponse.body.id); // important to check!
