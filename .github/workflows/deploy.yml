@@ -43,6 +43,11 @@ jobs:
       - name: Build
         run: sam build
 
+      - name: Copy external packages into Lambda artifact
+        run: |
+          mkdir -p .aws-sam/build/StorageFunction/node_modules
+          cp -r node_modules/security-context .aws-sam/build/StorageFunction/node_modules/
+
       - name: Deploy Dev
         if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
         run: |
