@@ -50,7 +50,6 @@ Resources:
           - ky-universal
           - ky
           - web-streams-polyfill
-          - "@trustvc/trustvc"
           - security-context
         EntryPoints:
           - src/functions/storage/index.ts
