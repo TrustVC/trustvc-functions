@@ -45,6 +45,10 @@ Resources:
       BuildProperties:
         Minify: false
         Target: es2022
+        Format: esm
+        OutputExtension: .mjs
+        External:
+          - core-js
         EntryPoints:
           - src/functions/storage/index.ts
 
