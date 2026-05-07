@@ -25,6 +25,7 @@ Resources:
       Environment:
         Variables:
           TT_AWS_BUCKET_NAME: !Sub "trustvc-storage-${Env}"
+          ENV: !Ref Env
           API_KEY: !Sub "{{resolve:ssm:/trustvc/${Env}/api-key}}"
       Policies:
         - S3CrudPolicy:

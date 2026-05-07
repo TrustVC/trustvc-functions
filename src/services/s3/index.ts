@@ -29,10 +29,16 @@ export const s3Get = (params: S3.Types.GetObjectRequest) =>
       if (results && results.Body) {
         return JSON.parse(results.Body.toString());
       }
-      throw createError(400, ERROR_MESSAGE.DOCUMENT_NOT_FOUND);
+      throw createError(404, ERROR_MESSAGE.DOCUMENT_NOT_FOUND);
     })
     .catch((err) => {
-      throw createError(400, err.message);
+      if (err.code === "NoSuchKey") {
+        if (process.env.ENV === "dev") {
+          throw createError(410, ERROR_MESSAGE.DOCUMENT_EXPIRED);
+        }
+        throw createError(404, ERROR_MESSAGE.DOCUMENT_NOT_FOUND);
+      }
+      throw createError(err.status || 400, err.message);
     });
 
 export const s3Remove = (params: S3.Types.DeleteObjectRequest) =>

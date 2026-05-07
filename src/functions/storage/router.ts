@@ -64,8 +64,8 @@ router.get("/:id", async (req: Request, res: Response) => {
     const { document } = await getDocument(id);
 
     res.status(200).json(document);
-  } catch (err) {
-    res.status(400).json(err);
+  } catch (err: any) {
+    res.status(err.status || 400).json({ message: err.message });
   }
 });
 

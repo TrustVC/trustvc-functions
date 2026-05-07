@@ -13,6 +13,7 @@ export enum ERROR_MESSAGE {
   CORS_UNALLOWED = "The CORS policy for this site does not allow access from the specified Origin.",
   API_KEY_INVALID = "API key invalid.",
   DOCUMENT_NOT_FOUND = "Document not found.",
+  DOCUMENT_EXPIRED = "This document has been removed. Documents in the development environment are only retained for 30 days.",
   DOCUMENT_GENERIC_ERROR = "Document invalid.",
   DOCUMENT_SCHEMA_INVALID = "Document is not OA compliant.",
   DOCUMENT_NETWORK_NOT_FOUND = "Document network not found.",
