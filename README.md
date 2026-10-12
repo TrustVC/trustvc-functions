@@ -25,7 +25,7 @@ Endpoint: `https://<your-api-gateway-url>/storage`
 POST
 
 - `/storage` uploads an encrypted OpenAttestation document
-- `/storage/:id` uploads an encrypted OpenAttestation document with decrypt key from `/storage/queue`
+- `/storage/:id` uploads an encrypted OpenAttestation document onto an unused reservation from `/storage/queue`. The body must include that reservation `key`. An identifier that already holds a document is rejected.
 
 ```
 // POST data example

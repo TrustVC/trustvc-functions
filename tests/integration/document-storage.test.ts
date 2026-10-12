@@ -217,7 +217,7 @@ describe("POST /:id", () => {
     const response = await request
       .post(`/${queueResponse.body.id}`)
       .set("x-api-key", process.env.API_KEY)
-      .send(postDataSepoliaV3)
+      .send({ ...postDataSepoliaV3, key: queueResponse.body.key })
       .expect(200);
 
     expect(response.body).toHaveProperty("id", queueResponse.body.id); // important to check!
