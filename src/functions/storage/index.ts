@@ -8,7 +8,7 @@ import { router } from "./router";
 
 const app = express();
 
-app.use(cors({ origin: corsOrigin, credentials: true }));
+app.use(cors({ origin: corsOrigin }));
 app.use(bodyParser.json({ limit: MAX_REQUEST_BODY_SIZE }));
 app.use(
   bodyParser.urlencoded({ limit: MAX_REQUEST_BODY_SIZE, extended: true })

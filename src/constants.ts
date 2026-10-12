@@ -2,7 +2,33 @@ import "dotenv/config";
 import { providers } from "ethers";
 import { SUPPORTED_CHAINS, CHAIN_ID, chainInfo } from "@trustvc/trustvc";
 
-export const ALLOWED_ORIGIN_REGEX = /^https:\/\/([a-zA-Z0-9-]+\.)*trustvc\.io/;
+const DNS_LABEL = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
+const TRUSTED_APEX_HOST = "trustvc.io";
+
+const isDnsHostname = (hostname: string): boolean =>
+  hostname.split(".").every((label) => DNS_LABEL.test(label));
+
+const isHostOrSubdomain = (hostname: string, apex: string): boolean =>
+  hostname === apex ||
+  (hostname.endsWith(`.${apex}`) && isDnsHostname(hostname));
+
+// Shared by credentialed CORS and the Origin/Referer guard.
+// The host must be the apex or a dot-separated subdomain, and the origin
+// string must be exactly scheme + host. A trusted name glued to another
+// domain (trustvc.io.evil.com, eviltrustvc.io) does not match.
+export const isAllowedBrowserOrigin = (origin: string): boolean => {
+  let parsed: URL;
+  try {
+    parsed = new URL(origin);
+  } catch {
+    return false;
+  }
+  if (parsed.protocol !== "https:") return false;
+  if (parsed.username !== "" || parsed.password !== "") return false;
+  if (parsed.port !== "") return false;
+  if (parsed.origin !== origin) return false;
+  return isHostOrSubdomain(parsed.hostname, TRUSTED_APEX_HOST);
+};
 
 export const LOCALHOST_ORIGINS = [
   "http://127.0.0.1:3000",

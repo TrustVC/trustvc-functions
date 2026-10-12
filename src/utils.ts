@@ -20,7 +20,7 @@ import { Request, Response, NextFunction } from "express";
 import { encryptString } from "@govtechsg/oa-encryption";
 import createError from "http-errors";
 import {
-  ALLOWED_ORIGIN_REGEX,
+  isAllowedBrowserOrigin,
   LOCALHOST_ORIGINS,
   ERROR_MESSAGE,
   SUPPORTED_NETWORKS,
@@ -32,7 +32,7 @@ export const corsOrigin = (
   callback: (err: Error | null, allow?: boolean) => void
 ) => {
   if (!origin) return callback(null, true); // allow requests with no origin, like mobile apps or curl requests
-  if (ALLOWED_ORIGIN_REGEX.test(origin)) {
+  if (isAllowedBrowserOrigin(origin)) {
     return callback(null, true);
   } else if (
     LOCALHOST_ORIGINS.includes(origin) &&
@@ -61,7 +61,7 @@ export const isTrustedOrigin = (candidate: string | undefined) => {
   } catch {
     return false;
   }
-  if (ALLOWED_ORIGIN_REGEX.test(origin)) return true;
+  if (isAllowedBrowserOrigin(origin)) return true;
   if (LOCALHOST_ORIGINS.includes(origin) && process.env.NODE_ENV === "test")
     return true;
   return false;
