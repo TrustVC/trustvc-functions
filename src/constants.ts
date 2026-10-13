@@ -2,7 +2,9 @@ import "dotenv/config";
 import { providers } from "ethers";
 import { SUPPORTED_CHAINS, CHAIN_ID, chainInfo } from "@trustvc/trustvc";
 
-export const ALLOWED_ORIGIN_REGEX = /^https:\/\/([a-zA-Z0-9-]+\.)*trustvc\.io/;
+// The host must be trustvc.io or a dot-separated subdomain, and the origin must end there.
+export const ALLOWED_ORIGIN_REGEX =
+  /^https:\/\/(?:[a-zA-Z0-9-]+\.)*trustvc\.io$/;
 
 export const LOCALHOST_ORIGINS = [
   "http://127.0.0.1:3000",
