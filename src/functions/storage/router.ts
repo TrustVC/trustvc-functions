@@ -9,6 +9,14 @@ import {
 
 const router = express.Router();
 
+const responseStatus = (err: unknown): number => {
+  if (typeof err === "object" && err !== null && "status" in err) {
+    const status = (err as { status: unknown }).status;
+    if (typeof status === "number") return status;
+  }
+  return 400;
+};
+
 router.post(
   "/",
   checkApiKey,
@@ -39,8 +47,9 @@ router.post(
     try {
       const result = await uploadDocumentAtId(document, id);
       res.status(200).json(result);
-    } catch (err: any) {
-      res.status(err.status || 400).json({ message: err.message });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Document invalid.";
+      res.status(responseStatus(err)).json({ message });
     }
   },
 );
@@ -50,7 +59,7 @@ router.get("/queue", checkApiKey, async (_req: Request, res: Response) => {
     const result = await getQueueNumber();
     res.status(200).json(result);
   } catch (err) {
-    res.status(400).json(err);
+    res.status(responseStatus(err)).json(err);
   }
 });
 
@@ -64,8 +73,9 @@ router.get("/:id", async (req: Request, res: Response) => {
     const { document } = await getDocument(id);
 
     res.status(200).json(document);
-  } catch (err: any) {
-    res.status(err.status || 400).json({ message: err.message });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Document invalid.";
+    res.status(responseStatus(err)).json({ message });
   }
 });
 

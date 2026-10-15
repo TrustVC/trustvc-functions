@@ -16,8 +16,18 @@ Globals:
     Architectures: [x86_64]
 
 Resources:
+  StorageReservationSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub "trustvc/${Env}/storage-reservation-secret"
+      Description: Server-side secret used to derive storage reservation keys.
+      GenerateSecretString:
+        PasswordLength: 64
+        ExcludePunctuation: true
+
   StorageFunction:
     Type: AWS::Serverless::Function
+    DependsOn: StorageReservationSecret
     Properties:
       FunctionName: !Sub "trustvc-storage-function-${Env}"
       CodeUri: ./
@@ -27,6 +37,7 @@ Resources:
           TT_AWS_BUCKET_NAME: !Sub "trustvc-storage-${Env}"
           ENV: !Ref Env
           API_KEY: !Sub "{{resolve:ssm:/trustvc/${Env}/api-key}}"
+          STORAGE_RESERVATION_SECRET: !Sub "{{resolve:secretsmanager:trustvc/${Env}/storage-reservation-secret:SecretString}}"
       Policies:
         - S3CrudPolicy:
             BucketName: !Sub "trustvc-storage-${Env}"
