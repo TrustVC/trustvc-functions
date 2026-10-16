@@ -72,13 +72,13 @@ export const s3GetIfExists = (params: S3.Types.GetObjectRequest) =>
     .getObject(params)
     .promise()
     .then((results) => {
-      if (results && results.Body) {
-        return {
-          body: JSON.parse(results.Body.toString()),
-          etag: typeof results.ETag === "string" ? results.ETag : "",
-        };
+      if (!results || !results.Body) {
+        throw createError(409, ERROR_MESSAGE.DOCUMENT_ALREADY_EXISTS);
       }
-      return null;
+      return {
+        body: JSON.parse(results.Body.toString()),
+        etag: typeof results.ETag === "string" ? results.ETag : "",
+      };
     })
     .catch((err) => {
       if (
@@ -88,7 +88,10 @@ export const s3GetIfExists = (params: S3.Types.GetObjectRequest) =>
       ) {
         return null;
       }
-      throw createError(err.status || 400, err.message);
+      if (typeof err.status === "number") {
+        throw err;
+      }
+      throw createError(err.statusCode || 400, err.message);
     });
 
 export const s3Remove = (params: S3.Types.DeleteObjectRequest) =>
