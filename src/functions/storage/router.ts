@@ -59,7 +59,9 @@ router.get("/queue", checkApiKey, async (_req: Request, res: Response) => {
     const result = await getQueueNumber();
     res.status(200).json(result);
   } catch (err) {
-    res.status(responseStatus(err)).json(err);
+    const message =
+      err instanceof Error ? err.message : "Unable to retrieve queue number.";
+    res.status(responseStatus(err)).json({ message });
   }
 });
 
