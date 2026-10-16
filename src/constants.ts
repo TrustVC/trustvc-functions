@@ -83,7 +83,7 @@ export const SUPPORTED_NETWORKS: supportedNetworks = {
     provider: jsonRpcProvider(
       process.env.STABILITY_TESTNET_API_KEY
         ? `https://rpc.testnet.stabilityprotocol.com/zgt/${process.env.STABILITY_TESTNET_API_KEY}`
-        : "https://free.testnet.stabilityprotocol.com",
+        : "https://free.testnet.stabilityprotocol.com"
     ),
   },
   [CHAIN_ID.stability]: {

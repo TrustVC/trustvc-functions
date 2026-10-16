@@ -62,9 +62,9 @@ describe("keyForUpload", () => {
   });
 
   it("keeps the key from a reservation that was stored earlier", () => {
-    expect(
-      keyForUpload({ key: "legacy-reservation-key" }, "document-id")
-    ).toBe("legacy-reservation-key");
+    expect(keyForUpload({ key: "legacy-reservation-key" }, "document-id")).toBe(
+      "legacy-reservation-key"
+    );
   });
 
   it("rejects a slot that already holds a document", () => {

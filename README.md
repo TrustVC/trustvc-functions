@@ -57,16 +57,19 @@ GET
 ### Local Development
 
 1. Install dependencies:
+
 ```bash
 npm install
 ```
 
 2. Start local development server with S3:
+
 ```bash
 npm run start
 ```
 
 This will start:
+
 - Local S3 server (s3rver) on port 4568
 - Lambda function locally
 
@@ -90,16 +93,19 @@ For local development, the dummy value in `API_KEY` should work.
 1. Install AWS SAM CLI: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html
 
 2. Build the application:
+
 ```bash
 sam build
 ```
 
 3. Deploy the application:
+
 ```bash
 sam deploy --guided
 ```
 
 During the guided deployment, you'll be prompted for:
+
 - Stack name
 - AWS Region
 - API Key (for authentication)
@@ -121,11 +127,13 @@ Alternatively, you can deploy using AWS Lambda and API Gateway manually:
 ## Testing
 
 Run tests:
+
 ```bash
 npm test
 ```
 
 Run tests with CI (includes local S3 and function server):
+
 ```bash
 npm run test:ci
 ```

@@ -9,7 +9,9 @@ describe("ALLOWED_ORIGIN_REGEX", () => {
   });
 
   it("rejects a trusted name glued to another host", () => {
-    expect(ALLOWED_ORIGIN_REGEX.test("https://trustvc.io.evil.com")).toBe(false);
+    expect(ALLOWED_ORIGIN_REGEX.test("https://trustvc.io.evil.com")).toBe(
+      false
+    );
     expect(ALLOWED_ORIGIN_REGEX.test("https://eviltrustvc.io")).toBe(false);
   });
 });

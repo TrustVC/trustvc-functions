@@ -31,7 +31,7 @@ router.post(
     } catch (err) {
       res.status(400).json(err);
     }
-  },
+  }
 );
 
 router.post(
@@ -51,7 +51,7 @@ router.post(
       const message = err instanceof Error ? err.message : "Document invalid.";
       res.status(responseStatus(err)).json({ message });
     }
-  },
+  }
 );
 
 router.get("/queue", checkApiKey, async (_req: Request, res: Response) => {
