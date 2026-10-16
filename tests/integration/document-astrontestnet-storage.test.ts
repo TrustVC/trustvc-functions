@@ -4,10 +4,7 @@ import documentAstronV3 from "../fixtures/v3/document-astrontestnet.json";
 import documentAstronNoNetworkV2 from "../fixtures/v2/document-astrontestnet-no-network.json";
 import documentAstronNoNetworkV3 from "../fixtures/v3/document-astrontestnet-no-network.json";
 
-import {
-  ERROR_MESSAGE,
-  DOCUMENT_STORAGE_ERROR_MESSAGE,
-} from "../../src/constants";
+import { ERROR_MESSAGE } from "../../src/constants";
 
 const API_ENDPOINT = "http://localhost:5080";
 const request = supertest(API_ENDPOINT);
@@ -115,11 +112,9 @@ describe("GET /:id", () => {
   });
 
   it("should fail if id is not found in s3 objects", async () => {
-    const response = await request.get("/abc").expect(400);
+    const response = await request.get("/abc").expect(404);
 
-    expect(response.body.message).toBe(
-      DOCUMENT_STORAGE_ERROR_MESSAGE.KEY_NOT_EXISTS
-    );
+    expect(response.body.message).toBe(ERROR_MESSAGE.DOCUMENT_NOT_FOUND);
   });
 });
 

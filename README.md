@@ -57,16 +57,19 @@ GET
 ### Local Development
 
 1. Install dependencies:
+
 ```bash
 npm install
 ```
 
 2. Start local development server with S3:
+
 ```bash
 npm run start
 ```
 
 This will start:
+
 - Local S3 server (s3rver) on port 4568
 - Lambda function locally
 
@@ -76,6 +79,7 @@ Required environment variables:
 
 - `API_KEY`: API key for authentication
 - `SESSION_SECRET`: Secret for express-session
+- `STORAGE_RESERVATION_SECRET`: Server-side secret used to derive storage reservation keys. The SAM stack creates this. Set it yourself for local runs.
 - `TT_AWS_BUCKET_NAME`: S3 bucket name for document storage
 - `TT_STORAGE_AWS_ACCESS_KEY_ID`: AWS access key ID for S3
 - `TT_STORAGE_AWS_SECRET_ACCESS_KEY`: AWS secret access key for S3
@@ -89,16 +93,19 @@ For local development, the dummy value in `API_KEY` should work.
 1. Install AWS SAM CLI: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html
 
 2. Build the application:
+
 ```bash
 sam build
 ```
 
 3. Deploy the application:
+
 ```bash
 sam deploy --guided
 ```
 
 During the guided deployment, you'll be prompted for:
+
 - Stack name
 - AWS Region
 - API Key (for authentication)
@@ -120,11 +127,13 @@ Alternatively, you can deploy using AWS Lambda and API Gateway manually:
 ## Testing
 
 Run tests:
+
 ```bash
 npm test
 ```
 
 Run tests with CI (includes local S3 and function server):
+
 ```bash
 npm run test:ci
 ```
