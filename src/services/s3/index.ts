@@ -27,16 +27,15 @@ export const s3PutConditional = (
   params: S3.Types.PutObjectRequest,
   headers: Record<string, string>
 ) => {
-  const request = s3.putObject({
-    ...params,
-    ...(headers["If-None-Match"]
-      ? { IfNoneMatch: headers["If-None-Match"] }
-      : {}),
-  });
+  const request = s3.putObject(params);
+  // Set on the HTTP request: aws-sdk versions before 2.1680 reject IfNoneMatch as a model param.
+  const ifNoneMatch = headers["If-None-Match"];
   const ifMatch = headers["If-Match"];
-  if (ifMatch) {
+  if (ifNoneMatch || ifMatch) {
     request.on("build", () => {
-      request.httpRequest.headers["If-Match"] = ifMatch;
+      if (ifNoneMatch)
+        request.httpRequest.headers["If-None-Match"] = ifNoneMatch;
+      if (ifMatch) request.httpRequest.headers["If-Match"] = ifMatch;
     });
   }
   return request.promise().catch((err) => {

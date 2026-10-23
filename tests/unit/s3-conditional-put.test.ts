@@ -13,15 +13,25 @@ describe("s3PutConditional", () => {
   });
 
   it("puts a new object with If-None-Match", async () => {
+    let noneMatch = "";
     const putObject = jest
       .spyOn(s3Prototype, "putObject")
       .mockImplementation(() => {
-        return {
-          on() {
+        const request = {
+          httpRequest: { headers: {} as Record<string, string> },
+          on(event: string, listener: () => void) {
+            if (event === "build") listener();
             return this;
           },
-          promise: async () => ({}),
-        } as unknown as AWS.Request<AWS.S3.PutObjectOutput, AWS.AWSError>;
+          promise: async () => {
+            noneMatch = request.httpRequest.headers["If-None-Match"];
+            return {};
+          },
+        };
+        return request as unknown as AWS.Request<
+          AWS.S3.PutObjectOutput,
+          AWS.AWSError
+        >;
       });
 
     await s3PutConditional(
@@ -30,8 +40,9 @@ describe("s3PutConditional", () => {
     );
 
     expect(putObject).toHaveBeenCalledWith(
-      expect.objectContaining({ IfNoneMatch: "*", Key: "document-id" })
+      expect.not.objectContaining({ IfNoneMatch: expect.anything() })
     );
+    expect(noneMatch).toBe("*");
   });
 
   it("attaches If-Match before the existing reservation is replaced", async () => {
