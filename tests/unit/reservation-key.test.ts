@@ -2,6 +2,8 @@ import { decryptString, encryptString } from "@govtechsg/oa-encryption";
 import { ERROR_MESSAGE } from "../../src/constants";
 import {
   isConditionalWriteConflict,
+  isIssuedReservationId,
+  issueReservationId,
   keyForUpload,
   reservationKeyFor,
   writeHeadersForObserved,
@@ -52,12 +54,15 @@ describe("keyForUpload", () => {
     process.env.STORAGE_RESERVATION_SECRET = SECRET;
   });
 
-  it("derives a key when nothing is stored yet", () => {
-    expect(keyForUpload(null, "document-id")).toBe(
-      reservationKeyFor("document-id")
-    );
-    expect(keyForUpload(undefined, "document-id")).toBe(
-      reservationKeyFor("document-id")
+  it("derives a key when nothing is stored yet for an issued id", () => {
+    const id = issueReservationId();
+    expect(keyForUpload(null, id)).toBe(reservationKeyFor(id));
+    expect(keyForUpload(undefined, id)).toBe(reservationKeyFor(id));
+  });
+
+  it("rejects an absent slot whose id was not issued by /queue", () => {
+    expect(() => keyForUpload(null, "document-id")).toThrow(
+      ERROR_MESSAGE.RESERVATION_REQUIRED
     );
   });
 
@@ -74,6 +79,39 @@ describe("keyForUpload", () => {
         "document-id"
       )
     ).toThrow(ERROR_MESSAGE.DOCUMENT_ALREADY_EXISTS);
+  });
+});
+
+describe("isIssuedReservationId", () => {
+  beforeEach(() => {
+    process.env.STORAGE_RESERVATION_SECRET = SECRET;
+  });
+
+  it("accepts an id from issueReservationId", () => {
+    expect(isIssuedReservationId(issueReservationId())).toBe(true);
+  });
+
+  it.each([
+    ["a bare uuid", "1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed"],
+    ["an arbitrary name", "document-id"],
+    ["a forged tag", `1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed.${"0".repeat(32)}`],
+    ["an extra segment", `${"x"}.${"0".repeat(32)}.extra`],
+    ["an empty string", ""],
+  ])("rejects %s", (_label, id) => {
+    expect(isIssuedReservationId(id)).toBe(false);
+  });
+
+  it("rejects an issued tag moved onto a different uuid", () => {
+    const tag = issueReservationId().split(".")[1];
+    expect(
+      isIssuedReservationId(`1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed.${tag}`)
+    ).toBe(false);
+  });
+
+  it("rejects an id issued under a different secret", () => {
+    const id = issueReservationId();
+    process.env.STORAGE_RESERVATION_SECRET = "another-secret";
+    expect(isIssuedReservationId(id)).toBe(false);
   });
 });
 
