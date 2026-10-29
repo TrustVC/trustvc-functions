@@ -79,7 +79,7 @@ Required environment variables:
 
 - `API_KEY`: API key for authentication
 - `SESSION_SECRET`: Secret for express-session
-- `STORAGE_RESERVATION_SECRET`: Server-side secret used to derive storage reservation keys. The SAM stack creates this. Set it yourself for local runs.
+- `STORAGE_RESERVATION_SECRET`: Server-side secret used to derive storage reservation keys. Set it yourself for local runs. Deploys pass the GitHub Actions secret `STORAGE_RESERVATION_SECRET` into the Lambda environment. For a new deployment, generate a cryptographically random value with `openssl rand -hex 32` (64 hex characters; the template requires at least 32). When migrating an existing stack, keep its current secret. Replacing the value invalidates reservation ids that have not been uploaded yet.
 - `TT_AWS_BUCKET_NAME`: S3 bucket name for document storage
 - `TT_STORAGE_AWS_ACCESS_KEY_ID`: AWS access key ID for S3
 - `TT_STORAGE_AWS_SECRET_ACCESS_KEY`: AWS secret access key for S3
