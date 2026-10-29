@@ -79,7 +79,7 @@ Required environment variables:
 
 - `API_KEY`: API key for authentication
 - `SESSION_SECRET`: Secret for express-session
-- `STORAGE_RESERVATION_SECRET`: Server-side secret used to derive storage reservation keys. Set it yourself for local runs. Dev and prod deploys pass the GitHub Actions secrets `STORAGE_RESERVATION_SECRET_DEV` and `STORAGE_RESERVATION_SECRET` into the Lambda environment. Use hex, at least 32 characters, and keep the same value across deploys.
+- `STORAGE_RESERVATION_SECRET`: Server-side secret used to derive storage reservation keys. Set it yourself for local runs. Deploys pass the GitHub Actions secret `STORAGE_RESERVATION_SECRET` into the Lambda environment. Use hex, at least 32 characters, and keep the same value across deploys.
 - `TT_AWS_BUCKET_NAME`: S3 bucket name for document storage
 - `TT_STORAGE_AWS_ACCESS_KEY_ID`: AWS access key ID for S3
 - `TT_STORAGE_AWS_SECRET_ACCESS_KEY`: AWS secret access key for S3

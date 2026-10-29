@@ -51,7 +51,7 @@ jobs:
       - name: Deploy Dev
         if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
         env:
-          STORAGE_RESERVATION_SECRET: ${{ secrets.STORAGE_RESERVATION_SECRET_DEV }}
+          STORAGE_RESERVATION_SECRET: ${{ secrets.STORAGE_RESERVATION_SECRET }}
         run: |
           test -n "$STORAGE_RESERVATION_SECRET"
           sam deploy \
