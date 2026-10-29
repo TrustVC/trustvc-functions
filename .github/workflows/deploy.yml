@@ -50,22 +50,28 @@ jobs:
 
       - name: Deploy Dev
         if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+        env:
+          STORAGE_RESERVATION_SECRET: ${{ secrets.STORAGE_RESERVATION_SECRET_DEV }}
         run: |
+          test -n "$STORAGE_RESERVATION_SECRET"
           sam deploy \
             --stack-name trustvc-storage-dev \
             --resolve-s3 \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
             --capabilities CAPABILITY_IAM \
-            --parameter-overrides Env=dev
+            --parameter-overrides Env=dev "StorageReservationSecret=${STORAGE_RESERVATION_SECRET}"
 
       - name: Deploy Prod
         if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master'
+        env:
+          STORAGE_RESERVATION_SECRET: ${{ secrets.STORAGE_RESERVATION_SECRET }}
         run: |
+          test -n "$STORAGE_RESERVATION_SECRET"
           sam deploy \
             --stack-name trustvc-storage-prod \
             --resolve-s3 \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
             --capabilities CAPABILITY_IAM \
-            --parameter-overrides Env=prod
+            --parameter-overrides Env=prod "StorageReservationSecret=${STORAGE_RESERVATION_SECRET}"
